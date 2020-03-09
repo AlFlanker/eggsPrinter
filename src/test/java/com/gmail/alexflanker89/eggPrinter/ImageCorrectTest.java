@@ -3,11 +3,13 @@ package com.gmail.alexflanker89.eggPrinter;
 import com.gmail.alexflanker89.eggPrinter.service.ImageCorrect;
 import com.gmail.alexflanker89.eggPrinter.service.ImageCorrectImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -15,14 +17,22 @@ import java.nio.file.Paths;
 
 public class ImageCorrectTest {
 
+    private static Path path;
+    private static Path referencePath;
+
+    @BeforeAll
+    public static void init() {
+        path = Paths.get("src/test/java/resources/test.bmp");
+        referencePath = Paths.get("src/test/java/resources/reference.bmp");
+    }
+
     @Test
     @DisplayName("Проверка провильности выдления контура")
-    public void test() throws IOException, URISyntaxException {
+    public void test1() throws IOException, URISyntaxException {
+        ImageCorrect imageCorrect = new ImageCorrectImpl(0.5, 2.0);
+        BufferedImage bufferedImage = ImageIO.read(path.toFile());
 
-        Path path = Paths.get("src/test/java/resources/test.bmp");
-        Path referencePath = Paths.get("src/test/java/resources/reference.bmp");
-        ImageCorrect imageCorrect = new ImageCorrectImpl();
-        BufferedImage load = imageCorrect.load(path);
+        BufferedImage load = imageCorrect.load(bufferedImage);
         // эталон
         BufferedImage reference = ImageIO.read((referencePath.toFile()));
 
@@ -47,5 +57,14 @@ public class ImageCorrectTest {
         }
 
         return true;
+    }
+    @Test
+    public void test2() throws IOException, URISyntaxException {
+        ImageCorrect imageCorrect = new ImageCorrectImpl(0.5, 2.0);
+        BufferedImage bufferedImage = ImageIO.read(path.toFile());
+        BufferedImage load = imageCorrect.load(bufferedImage);
+        BufferedImage result = imageCorrect.convertToVector(bufferedImage, load);
+        ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
+
     }
 }
