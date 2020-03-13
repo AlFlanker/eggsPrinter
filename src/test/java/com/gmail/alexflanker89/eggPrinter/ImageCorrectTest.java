@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -29,7 +28,7 @@ public class ImageCorrectTest {
     @Test
     @DisplayName("Проверка провильности выдления контура")
     public void test1() throws IOException, URISyntaxException {
-        ImageCorrect imageCorrect = new ImageCorrectImpl(0.5, 2.0);
+        ImageCorrect imageCorrect = new ImageCorrectImpl();
         BufferedImage bufferedImage = ImageIO.read(path.toFile());
 
         BufferedImage load = imageCorrect.load(bufferedImage);
@@ -58,13 +57,5 @@ public class ImageCorrectTest {
 
         return true;
     }
-    @Test
-    public void test2() throws IOException, URISyntaxException {
-        ImageCorrect imageCorrect = new ImageCorrectImpl(0.5, 2.0);
-        BufferedImage bufferedImage = ImageIO.read(path.toFile());
-        BufferedImage load = imageCorrect.load(bufferedImage);
-        BufferedImage result = imageCorrect.convertToVector(bufferedImage, load);
-        ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
 
-    }
 }
