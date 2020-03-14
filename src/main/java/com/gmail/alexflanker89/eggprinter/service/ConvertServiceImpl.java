@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,8 +17,6 @@ public class ConvertServiceImpl implements ConvertService {
 
     private final Double accur;
     private final Double dist;
-    public List<EggsPoint> eggsPointList_0_;
-    public List<EggsPoint> eggsPointList_1_;
 
     public ConvertServiceImpl(@Value("${spring.eggsPrinter.accur}") Double accur, @Value("${spring.eggsPrinter.dist}") Double dist) {
         this.accur = accur;
@@ -25,7 +24,7 @@ public class ConvertServiceImpl implements ConvertService {
     }
 
     @Override
-    public BufferedImage convertToVector(BufferedImage origin, BufferedImage mappedImage) {
+    public List<EggsPoint> convertToVector(BufferedImage origin, BufferedImage mappedImage) {
         assert Objects.nonNull(dist) && Objects.nonNull(accur);
 
         Graphics2D graphicOrigin = (Graphics2D)origin.getGraphics();
@@ -86,7 +85,7 @@ public class ConvertServiceImpl implements ConvertService {
         }
         eggsPointList0.add(new EggsPoint(x, y, 0));
 
-        eggsPointList1 = new ArrayList<>(MAX_POINTS);
+        eggsPointList1 = new LinkedList<EggsPoint>();
 
         if (!eggsPointList0.isEmpty()) {
             int n = 0;
@@ -168,10 +167,7 @@ public class ConvertServiceImpl implements ConvertService {
             }
         }
 
-        eggsPointList_0_ = eggsPointList0;
-        eggsPointList_1_ = eggsPointList1;
-
-        return mappedImage;
+        return eggsPointList1;
     }
 
     private void drawLine(int x1, int y1, int x2, int y2, Color color, Graphics2D graphic) {

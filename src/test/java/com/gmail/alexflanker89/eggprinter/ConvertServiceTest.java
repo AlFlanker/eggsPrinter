@@ -2,11 +2,11 @@ package com.gmail.alexflanker89.eggprinter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.alexflanker89.eggprinter.model.EggsPoint;
-import com.gmail.alexflanker89.eggprinter.service.ConvertService;
 import com.gmail.alexflanker89.eggprinter.service.ConvertServiceImpl;
 import com.gmail.alexflanker89.eggprinter.service.ImageCorrect;
 import com.gmail.alexflanker89.eggprinter.service.ImageCorrectImpl;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,37 +17,13 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConvertServiceTest {
-
-    private static Path path;
-    private static Path referencePath;
-
-    @BeforeAll
-    public static void init() {
-        path = Paths.get("src/test/java/resources/reference.bmp");
-        referencePath = Paths.get("src/test/java/resources/reference_vector.bmp");
-    }
-
-    @Test
-    @DisplayName("проверка эквивалентности работы с предыдущем алгоритмом")
-    @Disabled
-    public void test2() throws IOException, URISyntaxException {
-        BufferedImage bufferedImage = ImageIO.read(path.toFile());
-
-        ConvertService convertService = new ConvertServiceImpl(0.5, 2.0);
-
-        BufferedImage dst = new BufferedImage(bufferedImage.getWidth(),bufferedImage.getHeight(),1);
-        BufferedImage result = convertService.convertToVector(dst, bufferedImage);
-        ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
-        // эталон
-        BufferedImage reference = ImageIO.read((referencePath.toFile()));
-        Assertions.assertTrue(bufferedImagesEqual(reference,result));
-    }
 
     @Test
     @DisplayName("проверяем эквивалентность точек векторов с старым алгоритмом")
@@ -60,22 +36,16 @@ public class ConvertServiceTest {
         ConvertServiceImpl convertService = new ConvertServiceImpl(0.5, 2.0);
 
         BufferedImage dst = new BufferedImage(load.getWidth(),load.getHeight(),TYPE_INT_ARGB_PRE);
-        BufferedImage result = convertService.convertToVector(dst, load);
-        ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
-        // эталон
-        BufferedImage reference = ImageIO.read((Paths.get("src/test/java/resources/reference_vector.bmp").toFile()));
+        List<EggsPoint> eggsPoints = convertService.convertToVector(dst, load);
+
         ObjectMapper mapper = new ObjectMapper();
         // два наборы точек
-        String json1 = String.join("", Files.readAllLines(Paths.get("src/test/java/resources/json1.txt")));
         String json2 = String.join("", Files.readAllLines(Paths.get("src/test/java/resources/json2.txt")));
-        List<EggsPoint> eggsPoints0 = mapper.readValue(json1, mapper.getTypeFactory().constructCollectionType(List.class, EggsPoint.class));
-        List<EggsPoint> eggsPoints1 = mapper.readValue(json2, mapper.getTypeFactory().constructCollectionType(List.class, EggsPoint.class));
+        List<EggsPoint> eggsPoints1 = mapper.readValue(json2, mapper.getTypeFactory().constructCollectionType(LinkedList.class, EggsPoint.class));
 
         assertAll("проверяем точки", () -> {
-            assertIterableEquals(eggsPoints0, convertService.eggsPointList_0_);
-            assertEquals(eggsPoints0, convertService.eggsPointList_0_);
-            assertIterableEquals(eggsPoints1, convertService.eggsPointList_1_);
-            assertEquals(eggsPoints1, convertService.eggsPointList_1_);
+            assertIterableEquals(eggsPoints1, eggsPoints);
+            assertEquals(eggsPoints1, eggsPoints);
         });
 
     }
