@@ -1,7 +1,7 @@
-package com.gmail.alexflanker89.eggPrinter;
+package com.gmail.alexflanker89.eggprinter;
 
-import com.gmail.alexflanker89.eggPrinter.service.ImageCorrect;
-import com.gmail.alexflanker89.eggPrinter.service.ImageCorrectImpl;
+import com.gmail.alexflanker89.eggprinter.service.ImageCorrect;
+import com.gmail.alexflanker89.eggprinter.service.ImageCorrectImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.gmail.alexflanker89.eggPrinter.service;
+package com.gmail.alexflanker89.eggprinter.service;
 
 import java.awt.image.BufferedImage;
 

@@ -1,4 +1,4 @@
-package com.gmail.alexflanker89.eggPrinter;
+package com.gmail.alexflanker89.eggprinter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

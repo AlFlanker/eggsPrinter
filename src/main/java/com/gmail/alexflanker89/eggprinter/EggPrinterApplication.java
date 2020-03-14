@@ -1,4 +1,4 @@
-package com.gmail.alexflanker89.eggPrinter;
+package com.gmail.alexflanker89.eggprinter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

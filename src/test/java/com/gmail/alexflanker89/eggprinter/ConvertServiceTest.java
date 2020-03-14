@@ -1,12 +1,12 @@
-package com.gmail.alexflanker89.eggPrinter;
+package com.gmail.alexflanker89.eggprinter;
 
-import com.gmail.alexflanker89.eggPrinter.service.ConvertService;
-import com.gmail.alexflanker89.eggPrinter.service.ConvertServiceImpl;
-import com.gmail.alexflanker89.eggPrinter.service.ImageCorrect;
-import com.gmail.alexflanker89.eggPrinter.service.ImageCorrectImpl;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.alexflanker89.eggprinter.model.EggsPoint;
+import com.gmail.alexflanker89.eggprinter.service.ConvertService;
+import com.gmail.alexflanker89.eggprinter.service.ConvertServiceImpl;
+import com.gmail.alexflanker89.eggprinter.service.ImageCorrect;
+import com.gmail.alexflanker89.eggprinter.service.ImageCorrectImpl;
+import org.junit.jupiter.api.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,10 +14,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConvertServiceTest {
 
@@ -31,6 +34,8 @@ public class ConvertServiceTest {
     }
 
     @Test
+    @DisplayName("проверка эквивалентности работы с предыдущем алгоритмом")
+    @Disabled
     public void test2() throws IOException, URISyntaxException {
         BufferedImage bufferedImage = ImageIO.read(path.toFile());
 
@@ -41,33 +46,41 @@ public class ConvertServiceTest {
         ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
         // эталон
         BufferedImage reference = ImageIO.read((referencePath.toFile()));
-        int type = reference.getType();
-        int type1 = result.getType();
         Assertions.assertTrue(bufferedImagesEqual(reference,result));
     }
 
     @Test
+    @DisplayName("проверяем эквивалентность точек векторов с старым алгоритмом")
     public void test3() throws IOException, URISyntaxException {
-        Path path = Paths.get("src/test/java/resources/test3.bmp");
+        Path path = Paths.get("src/test/java/resources/test.bmp");
         BufferedImage bufferedImage = ImageIO.read(path.toFile());
         ImageCorrect imageCorrect = new ImageCorrectImpl();
         BufferedImage load = imageCorrect.load(bufferedImage);
 
-        ConvertService convertService = new ConvertServiceImpl(0.5, 2.0);
+        ConvertServiceImpl convertService = new ConvertServiceImpl(0.5, 2.0);
 
         BufferedImage dst = new BufferedImage(load.getWidth(),load.getHeight(),TYPE_INT_ARGB_PRE);
         BufferedImage result = convertService.convertToVector(dst, load);
         ImageIO.write(result, "bmp", new File("src/test/java/resources/res.bmp"));
         // эталон
-//        BufferedImage reference = ImageIO.read((referencePath.toFile()));
-        BufferedImage reference = ImageIO.read((Paths.get("src/test/java/resources/result_vector.bmp").toFile()));
-        int type = reference.getType();
-        int type1 = result.getType();
-        Assertions.assertTrue(bufferedImagesEqual(reference,result));
+        BufferedImage reference = ImageIO.read((Paths.get("src/test/java/resources/reference_vector.bmp").toFile()));
+        ObjectMapper mapper = new ObjectMapper();
+        // два наборы точек
+        String json1 = String.join("", Files.readAllLines(Paths.get("src/test/java/resources/json1.txt")));
+        String json2 = String.join("", Files.readAllLines(Paths.get("src/test/java/resources/json2.txt")));
+        List<EggsPoint> eggsPoints0 = mapper.readValue(json1, mapper.getTypeFactory().constructCollectionType(List.class, EggsPoint.class));
+        List<EggsPoint> eggsPoints1 = mapper.readValue(json2, mapper.getTypeFactory().constructCollectionType(List.class, EggsPoint.class));
+
+        assertAll("проверяем точки", () -> {
+            assertIterableEquals(eggsPoints0, convertService.eggsPointList_0_);
+            assertEquals(eggsPoints0, convertService.eggsPointList_0_);
+            assertIterableEquals(eggsPoints1, convertService.eggsPointList_1_);
+            assertEquals(eggsPoints1, convertService.eggsPointList_1_);
+        });
+
     }
 
-    @Test
-    public void test4() throws IOException, URISyntaxException {
+    public void test4() throws IOException {
 
         BufferedImage reference = ImageIO.read((Paths.get("src/test/java/resources/res.bmp").toFile()));
         BufferedImage reference1 = ImageIO.read((Paths.get("src/test/java/resources/reference_vector.bmp").toFile()));
@@ -97,13 +110,10 @@ public class ConvertServiceTest {
         for (int x = 0; x < img1.getWidth(); x++) {
             for (int y = 0; y < img1.getHeight(); y++) {
                 if (img1.getRGB(x, y) != img2.getRGB(x, y)) {
-                    System.out.println(Integer.toHexString(img1.getRGB(x, y)) + " != " + Integer.toHexString(img2.getRGB(x, y)));
-                    System.out.println(x + "; " + y);
                     count++;
                 }
             }
         }
-        System.out.println(count);
         return count == 0;
     }
 }
