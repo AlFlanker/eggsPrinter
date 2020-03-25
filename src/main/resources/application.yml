@@ -1,0 +1,8 @@
+spring:
+  eggsPrinter:
+    accur : 0.5
+    dist : 2.0
+  servlet:
+    multipart:
+      max-file-size: 500KB
+
