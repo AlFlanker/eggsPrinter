@@ -6,5 +6,4 @@ import java.net.URISyntaxException;
 
 public interface ImageCorrect {
     BufferedImage load (BufferedImage image) throws IOException, URISyntaxException;
-//    BufferedImage convertToVector(BufferedImage origin, BufferedImage res);
 }
