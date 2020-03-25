@@ -7,8 +7,6 @@ import jssc.SerialPortList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 
 @Slf4j
 @Component
@@ -43,10 +41,9 @@ public class MSerialPort {
         return serialPort.closePort();
     }
 
-    public boolean OpenPort() {
+    public boolean openPort() throws SerialPortException {
         if(isOpen()) return true;
         boolean isOpen = false;
-        try {
             /*
              * Открываем порт
              */
@@ -58,13 +55,19 @@ public class MSerialPort {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-        } catch (SerialPortException ex) {
-            ex.printStackTrace();
-        }
+
         return isOpen;
     }
 
-    public void write(byte[] data) throws IOException, SerialPortException {
-        serialPort.writeBytes(data);
+    public void write(byte[] data) throws SerialPortException, InterruptedException {
+        if (!isOpen()) {
+            openPort();
+        }
+        for(byte b: data) {
+            // ToDo: проверить нужно ли
+            Thread.sleep(99);
+            serialPort.writeByte(b);
+        }
+
     }
 }
