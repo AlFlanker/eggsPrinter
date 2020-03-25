@@ -64,8 +64,7 @@ public class MSerialPort {
             openPort();
         }
         for(byte b: data) {
-            // ToDo: проверить нужно ли
-            Thread.sleep(99);
+            Thread.sleep(100);
             serialPort.writeByte(b);
         }
 
