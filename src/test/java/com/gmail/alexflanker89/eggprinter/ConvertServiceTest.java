@@ -46,6 +46,7 @@ public class ConvertServiceTest {
         assertAll("проверяем точки", () -> {
             assertIterableEquals(eggsPoints1, eggsPoints);
             assertEquals(eggsPoints1, eggsPoints);
+            assertTrue(eggsPoints.size() == eggsPoints1.size());
         });
 
     }
