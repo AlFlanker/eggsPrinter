@@ -48,13 +48,9 @@ public class MSerialPort {
     }
 
     private boolean open() throws SerialPortException {
-        /*
-         * Открываем порт
-         */
+        // Открываем порт
         boolean isOpen = serialPort.openPort();
-        /*
-         * Выставляем параметры
-         */
+        // Выставляем параметры
         serialPort.setParams(SerialPort.BAUDRATE_115200,
                 SerialPort.DATABITS_8,
                 SerialPort.STOPBITS_1,
