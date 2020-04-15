@@ -1,9 +1,6 @@
 package com.gmail.alexflanker89.eggprinter;
 
 import com.gmail.alexflanker89.eggprinter.config.MSerialPort;
-import com.gmail.alexflanker89.eggprinter.service.ConvertService;
-import com.gmail.alexflanker89.eggprinter.service.DrawService;
-import com.gmail.alexflanker89.eggprinter.service.ImageCorrect;
 import com.gmail.alexflanker89.eggprinter.service.UartTestService;
 import jssc.SerialPortException;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +17,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,18 +33,12 @@ public class PrintTest {
     @MockBean
     MSerialPort serialPort;
     @Autowired
-    private ConvertService convertService;
-    @Autowired
-    private ImageCorrect imageCorrect;
-    @Autowired
-    private DrawService drawService;
-    @Autowired
     UartTestService uartService;
     @Autowired
     MockMvc mvc;
 
     @BeforeEach
-    public void init() throws SerialPortException, InterruptedException {
+    private void init() throws SerialPortException, InterruptedException {
         doReturn(true).when(serialPort).isOpen();
         doReturn(true).when(serialPort).openPort();
         doNothing().when(serialPort).write(any());
@@ -56,39 +47,17 @@ public class PrintTest {
     @Test
     @DisplayName("смотрим что ушло в com")
     public void printTest_1() throws Exception {
-        Path path = Paths.get("src/test/java/resources/test.bmp");
+        Path path = Paths.get("src/test/java/resources/test4.bmp");
+        // 'эталон
+        Path rawPath = Paths.get("src/test/java/resources/rawData.txt");
+        byte[] rawBytes = Files.readAllBytes(rawPath);
         byte[] bytes = Files.readAllBytes(path);
         MockMultipartFile firstFile = new MockMultipartFile("file", "test.bmp", "text/plain", bytes);
         mvc.perform(multipart("/load-file").file(firstFile)).andExpect(status().is(200));
         ByteArrayOutputStream stream = (ByteArrayOutputStream)ReflectionTestUtils.getField(uartService, "stream");
-        int size = stream.size();
+
+        assert stream != null;
         byte[] array = stream.toByteArray();
-        StringBuilder stringBuilder = new StringBuilder();
-        int count = 0;
-        FileWriter fileWriter = new FileWriter("res");
-        for (int i = 0; i < stream.size(); i++) {
-            if(count == 16) {
-                count = 0;
-                stringBuilder.append("\n").append(byteToHex(array[i]));
-                fileWriter.write(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-                count++;
-
-            } else {
-                count++;
-                stringBuilder.append(" ").append(byteToHex(array[i]));
-            }
-
-        }
-        fileWriter.flush();
-        fileWriter.close();
-
+        assertArrayEquals(array, rawBytes);
     }
-    public String byteToHex(byte num) {
-        char[] hexDigits = new char[2];
-        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
-        hexDigits[1] = Character.forDigit((num & 0xF), 16);
-        return new String(hexDigits).toUpperCase();
-    }
-
-}
+ }
