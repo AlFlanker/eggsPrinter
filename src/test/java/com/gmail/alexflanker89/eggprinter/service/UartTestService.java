@@ -1,6 +1,5 @@
-package com.gmail.alexflanker89.eggprinter;
+package com.gmail.alexflanker89.eggprinter.service;
 
-import com.gmail.alexflanker89.eggprinter.service.UartService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 

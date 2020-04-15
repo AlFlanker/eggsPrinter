@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -34,10 +31,6 @@ public class StepperServiceImpl implements StepperService {
 
     @Override
     public void addLine(int x, int y, int z) {
-//        byte[] xx, yy, zz;
-//        xx = intToLittleEndian(x);
-//        yy = intToLittleEndian(y);
-//        zz = intToLittleEndian(z);
         if (uartService.isOpen()) {
             byte[] pkt = new byte[13];
             pkt[0] = (byte) 'a';
@@ -66,21 +59,4 @@ public class StepperServiceImpl implements StepperService {
             uartService.send(pkt, 0 , pkt.length);
         }
     }
-
-//    private static byte[] intToLittleEndian(int numero) {
-//        byte[] b = new byte[4];
-//        b[0] = (byte) (numero & 0xFF);
-//        b[1] = (byte) ((numero >> 8) & 0xFF);
-//        b[2] = (byte) ((numero >> 16) & 0xFF);
-//        b[3] = (byte) ((numero >> 24) & 0xFF);
-//        return b;
-//    }
-
-    private static byte[] intToLittleEndian(int numero) {
-        ByteBuffer bb = ByteBuffer.allocate(4);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        bb.putInt(numero);
-        return bb.array();
-    }
-
 }

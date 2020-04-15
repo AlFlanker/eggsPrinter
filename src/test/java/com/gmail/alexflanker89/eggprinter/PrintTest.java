@@ -4,6 +4,7 @@ import com.gmail.alexflanker89.eggprinter.config.MSerialPort;
 import com.gmail.alexflanker89.eggprinter.service.ConvertService;
 import com.gmail.alexflanker89.eggprinter.service.DrawService;
 import com.gmail.alexflanker89.eggprinter.service.ImageCorrect;
+import com.gmail.alexflanker89.eggprinter.service.UartTestService;
 import jssc.SerialPortException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +58,7 @@ public class PrintTest {
     public void printTest_1() throws Exception {
         Path path = Paths.get("src/test/java/resources/test.bmp");
         byte[] bytes = Files.readAllBytes(path);
-        MockMultipartFile firstFile = new MockMultipartFile("file", "test4.bmp", "text/plain", bytes);
+        MockMultipartFile firstFile = new MockMultipartFile("file", "test.bmp", "text/plain", bytes);
         mvc.perform(multipart("/load-file").file(firstFile)).andExpect(status().is(200));
         ByteArrayOutputStream stream = (ByteArrayOutputStream)ReflectionTestUtils.getField(uartService, "stream");
         int size = stream.size();

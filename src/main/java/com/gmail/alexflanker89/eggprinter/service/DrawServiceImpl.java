@@ -18,10 +18,8 @@ public class DrawServiceImpl implements DrawService {
     public void draw(List<EggsPoint> points) {
         stepperService.stop();
         stepperService.clearLines();
-        points.forEach(eggsPoint -> {
-                log.warn(eggsPoint.getX() - 320 + ", " + "" + -(eggsPoint.getY() - 100) * 4  +", " +  eggsPoint.getZ());
-                stepperService.addLine(eggsPoint.getX() - 320 , -(eggsPoint.getY() - 100) * 4, eggsPoint.getZ());
-                });
+        points.forEach(eggsPoint -> stepperService.addLine((eggsPoint.getX() - 320) * 5,
+                -(eggsPoint.getY() - 100) * 4, eggsPoint.getZ()));
         stepperService.start();
     }
 }
