@@ -16,6 +16,7 @@ public class UartServiceImpl implements UartService {
     @Override
     @SneakyThrows
     public void send(byte[] data, int start, int quantity) {
+        Thread.sleep(70);
         port.write(data);
     }
 

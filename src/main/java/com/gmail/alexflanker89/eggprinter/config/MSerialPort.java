@@ -36,12 +36,11 @@ public class MSerialPort {
         return open();
     }
 
-    public void write(byte[] data) throws SerialPortException, InterruptedException {
+    public void write(byte[] data) throws SerialPortException {
         if (!isOpen()) {
             openPort();
         }
         for(byte b: data) {
-            Thread.sleep(100);
             serialPort.writeByte(b);
         }
 
