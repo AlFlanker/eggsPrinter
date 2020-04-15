@@ -17,19 +17,9 @@ public class MSerialPort {
         String[] portNames = SerialPortList.getPortNames();
         this.serialPort = new SerialPort(portNames[1]);
         try {
-            /*
-             * Открываем порт
-             */
-            serialPort.openPort();
-            /*
-             * Выставляем параметры
-             */
-            serialPort.setParams(SerialPort.BAUDRATE_115200,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
+            open();
         } catch (SerialPortException ex) {
-            ex.printStackTrace();
+            log.error(ex.getMessage());
         }
     }
 
@@ -43,20 +33,7 @@ public class MSerialPort {
 
     public boolean openPort() throws SerialPortException {
         if(isOpen()) return true;
-        boolean isOpen = false;
-            /*
-             * Открываем порт
-             */
-            isOpen = serialPort.openPort();
-            /*
-             * Выставляем параметры
-             */
-            serialPort.setParams(SerialPort.BAUDRATE_115200,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-
-        return isOpen;
+        return open();
     }
 
     public void write(byte[] data) throws SerialPortException, InterruptedException {
@@ -68,5 +45,20 @@ public class MSerialPort {
             serialPort.writeByte(b);
         }
 
+    }
+
+    private boolean open() throws SerialPortException {
+        /*
+         * Открываем порт
+         */
+        boolean isOpen = serialPort.openPort();
+        /*
+         * Выставляем параметры
+         */
+        serialPort.setParams(SerialPort.BAUDRATE_115200,
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
+        return isOpen;
     }
 }

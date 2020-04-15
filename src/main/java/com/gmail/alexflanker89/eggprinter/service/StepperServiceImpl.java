@@ -52,7 +52,6 @@ public class StepperServiceImpl implements StepperService {
 
     @Override
     public void start() {
-        log.error("Start!");
         if (uartService.isOpen()) {
             byte[] pkt = new byte[1];
             pkt[0] = (byte)'b';
